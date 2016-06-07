@@ -5824,24 +5824,32 @@ SocialCalc.DetermineValueType = function(rawvalue) {
          type = "n";
          }
       }
+   else if (tvalue.match(/^[-+]?\d*(?:\,)?\d*\s*%$/)) { // percent form: 15,1%
+      value = (tvalue.slice(0, -1).replace(",",".") - 0) / 100; // convert and scale
+      type = "n%";
+      }
    else if (tvalue.match(/^[-+]?\d*(?:\.)?\d*\s*%$/)) { // percent form: 15.1%
       value = (tvalue.slice(0, -1) - 0) / 100; // convert and scale
       type = "n%";
+      }
+   else if (tvalue.match(/^[-+]?\d*(?:\,)?\d*\s*€$/) && tvalue.match(/\d/)) { // € format: 1,49€
+      value = tvalue.replace(/\€/, "").replace(",",".") - 0;
+      type = "n$";
       }
    else if (tvalue.match(/^[-+]?\$\s*\d*(?:\.)?\d*\s*$/) && tvalue.match(/\d/)) { // $ format: $1.49
       value = tvalue.replace(/\$/, "") - 0;
       type = "n$";
       }
    else if (tvalue.match(/^[-+]?(\d*,\d*)+(?:\.)?\d*$/)) { // number format ignoring commas: 1,234.49
-      value = tvalue.replace(/,/g, "") - 0;
+      value = ((navigator.language).indexOf("fr") === 0)  ? (tvalue.replace(/,/g, "") - 0) : (tvalue.replace(/,/g, ".").replace(/./g, "") - 0);
       type = "n";
       }
    else if (tvalue.match(/^[-+]?(\d*,\d*)+(?:\.)?\d*\s*%$/)) { // % with commas: 1,234.49%
-      value = (tvalue.replace(/[%,]/g, "") - 0) / 100;
+      value = ((navigator.language).indexOf("fr") === 0)  ? ((tvalue.replace(/[%,]/g, "") - 0) / 100) : (tvalue.replace(/[%.]/g, "").replace(/,/g, ".") - 0) / 100);
       type = "n%";
       }
    else if (tvalue.match(/^[-+]?\$\s*(\d*,\d*)+(?:\.)?\d*$/) && tvalue.match(/\d/)) { // $ and commas: $1,234.49
-      value = tvalue.replace(/[\$,]/g, "") - 0;
+      value = ((navigator.language).indexOf("fr") === 0)  ? tvalue.replace(/[\$,]/g, "") - 0 : tvalue.replace(/[\$.]/g, "").replace(/,/g, ".") ;
       type = "n$";
       }
    else if (matches=value.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{1,4})\s*$/)) { // MM-DD-YYYY, MM/DD/YYYY
